@@ -2,8 +2,11 @@ package com.example.cargame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -17,6 +20,7 @@ public class MenuActivity extends AppCompatActivity {
     private MaterialButton menu_BTN_game;
     private SwitchMaterial switch_Sensor;
     private ArrayList<Integer> leaderboardScores;
+    private int sensorEnabled = 0;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -46,13 +50,22 @@ public class MenuActivity extends AppCompatActivity {
             Leaderboard.getInstance().loadRecordsArrayFromSharedPreferences(getApplicationContext());
         }
 
-      /*  Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("BUNDLE");
-        if (bundle != null) {
-            //add record
-            Record record = (Record) bundle.getSerializable("RECORD");
-            Leaderboard.getInstance().addRecordToRecordsArray(getApplicationContext(), record);
-        }*/
+        switch_Sensor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+                if (switch_Sensor.isChecked()) {
+                    if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+                        switch_Sensor.setChecked(true);
+                        sensorEnabled = 1;
+                    } else {
+                        switch_Sensor.setChecked(false);
+                    }
+                } else {
+                    sensorEnabled = 0;
+                }
+            }
+        });
 
     }
 
@@ -65,6 +78,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void startGame() {
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("SENSOR_ENABLED", sensorEnabled);
         startActivity(intent);
        // finish();
     }

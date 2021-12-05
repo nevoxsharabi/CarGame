@@ -9,6 +9,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,13 +23,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -36,14 +43,28 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<ImageView> coins;
     private Random random;
     private int score;
+    private int sensorEnabled = 0;
+    private int slowDelay = 600;
+    private int fastDelay = 300;
+    boolean fastDelayMode = false;
     private int distance;
     private int randomNumber;
     private MaterialTextView Game_MTV_distance;
     private MaterialTextView Game_MTV_score;
+    private MaterialTextView Game_MTV_Speed;
+    private LinearLayout linearLayoutArrows;
+
     private MediaPlayer crushSound;
     private MediaPlayer coinSound;
     private LocationManager lm;
-    private float oldX = 0;
+    private float oldX = 10;
+    private float oldY = 10;
+    private float oldZ = 10;
+    private float newX = 0;
+    private float newY = 0;
+    private float newZ = 0;
+
+
     private LocationListener locationListener;
     private double longitude = 0;
     private double latitude = 0;
@@ -52,6 +73,38 @@ public class GameActivity extends AppCompatActivity {
     private Handler handler;
     private Runnable runnable;
 
+    private MaterialTextView game_LBL_title;
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private SensorEventListener accSensorEventListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            DecimalFormat df = new DecimalFormat("##.##");
+            newX = event.values[0] + 10;
+            newY = event.values[1] + 10;
+            newZ = event.values[2] + 10;
+            if (newX - oldX > 0.5) {
+                moveCarRightSensor();
+            } else if (newX - oldX < -0.5) {
+                moveCarLeftSensor();
+            }
+
+            if (newZ - oldZ > 1.5) {
+                fastDelayMode = true;
+            } else if (newZ - oldZ < -1.5) {
+                fastDelayMode = false;
+            }
+
+            oldX = newX;
+            oldY = newY;
+            oldZ = newZ;
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +112,8 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         Game_MTV_distance = findViewById(R.id.Game_MTV_distance);
         Game_MTV_score = findViewById(R.id.Game_MTV_score);
+        Game_MTV_Speed = findViewById(R.id.Game_MTV_speedMode);
+        linearLayoutArrows = findViewById(R.id.linearLayoutArrows);
         crushSound = MediaPlayer.create(GameActivity.this, R.raw.carsh);
         coinSound = MediaPlayer.create(GameActivity.this, R.raw.coin);
         random = new Random();
@@ -95,14 +150,18 @@ public class GameActivity extends AppCompatActivity {
             coins.add(findViewById(getResources().getIdentifier("imageViewCoin" + i, "id", getPackageName())));
         }
 
-        //Intent intent = getIntent();
-       /* sensorEnabled = intent.getIntExtra("SENSOR_ENABLED", 0);
+        Intent intent = getIntent();
+        sensorEnabled = intent.getIntExtra("SENSOR_ENABLED", 0);
         if (sensorEnabled == 1) {
             sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             linearLayoutArrows.setVisibility(View.INVISIBLE);
             Log.i("info", "Sensor Enabled: " + sensorEnabled);
-        }*/
+        }else{
+            Game_MTV_Speed.setVisibility(View.INVISIBLE);
+        }
+
+        //initSensor();
 
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -110,11 +169,62 @@ public class GameActivity extends AppCompatActivity {
             public void run() {
                 dropItems();
                 Game_MTV_distance.setText(++distance + "M");
-                handler.postDelayed(this, 500);
+                //++distance;
+                if (fastDelayMode) {
+                    handler.postDelayed(this, fastDelay);
+                    Game_MTV_Speed.setText("Speed Mode:fast");
+                } else {
+                    handler.postDelayed(this, slowDelay);
+                    Game_MTV_Speed.setText("Speed Mode:slow");
+                }
+
             }
         };
         handler.post(runnable);
 
+    }
+
+
+    private void moveCarLeftSensor() {
+        int carTag = Integer.parseInt(car.getTag().toString());
+        if (carTag != 0) {
+            car.setVisibility(View.INVISIBLE);
+            car = findViewById(getResources().getIdentifier("imageViewCar" + (carTag - 1), "id", getPackageName()));
+            car.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void moveCarRightSensor() {
+        int carTag = Integer.parseInt(car.getTag().toString());
+        if (carTag != 4) {
+            car.setVisibility(View.INVISIBLE);
+            car = findViewById(getResources().getIdentifier("imageViewCar" + (carTag + 1), "id", getPackageName()));
+            car.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (sensorEnabled == 1)
+            sensorManager.registerListener(accSensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (sensorEnabled == 1)
+            sensorManager.unregisterListener(accSensorEventListener);
+    }
+
+    private void initSensor() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    public boolean isSensorExists(int sensorType) {
+        return (sensorManager.getDefaultSensor(sensorType) != null);
     }
 
 
@@ -200,11 +310,7 @@ public class GameActivity extends AppCompatActivity {
 
 
     public void dropItems() {
-        if (checkCoin())
-            updateScore();
 
-        if (checkCrush())
-            crush();
         for (int i = 39; i >= 0; i--) {
             if (i > 34) {
                 coins.get(i).setVisibility(View.INVISIBLE);
@@ -220,7 +326,12 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }
-        randomNumber = random.nextInt(1000) % 12;
+        if (checkCoin())
+            updateScore();
+
+        if (checkCrush())
+            crush();
+        randomNumber = random.nextInt(1000) % 13;
         if (randomNumber < 5)
             rocks.get(randomNumber).setVisibility(View.VISIBLE);
 

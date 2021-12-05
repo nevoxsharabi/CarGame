@@ -24,7 +24,7 @@ public class SplashScreen extends AppCompatActivity {
         imageViewSplashIcon.setX(height / 2);
         imageViewSplashIcon.setScaleX(1.0f);
         imageViewSplashIcon.setScaleY(1.0f);
-        imageViewSplashIcon.animate().scaleX(1.0f).scaleY(1.0f).translationY(-height / 2).setDuration(3000).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
+        imageViewSplashIcon.animate().scaleX(1.0f).scaleY(1.0f).translationX(-height / 2).setDuration(3000).setInterpolator(new AccelerateInterpolator()).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
 
