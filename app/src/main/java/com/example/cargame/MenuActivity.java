@@ -42,12 +42,11 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showRecords();
-
             }
         });
 
-        if (Leaderboard.getInstance().getRecordsArray() == null) {
-            Leaderboard.getInstance().loadRecordsArrayFromSharedPreferences(getApplicationContext());
+        if (ScoreBoard.getInstance().getRecordsArray() == null) {
+            ScoreBoard.getInstance().loadRecordsArrayFromSharedPreferences(getApplicationContext());
         }
 
         switch_Sensor.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +71,7 @@ public class MenuActivity extends AppCompatActivity {
     private void showRecords() {
         Intent intent = new Intent(this, LeaderboardActivity.class);
         startActivity(intent);
-        //finish();
+
     }
 
 
@@ -80,7 +79,6 @@ public class MenuActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("SENSOR_ENABLED", sensorEnabled);
         startActivity(intent);
-       // finish();
     }
 
 }

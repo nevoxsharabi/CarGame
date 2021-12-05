@@ -9,7 +9,6 @@ import android.os.Bundle;
 import java.util.ArrayList;
 
 public class LeaderboardActivity extends AppCompatActivity {
-    private ArrayList<Integer> distances;
     private RecordsListFragment listFragment;
     private MapsFragment mapsFragment;
     private CallbackList callbackList;
@@ -35,7 +34,6 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
         startActivity(intent);
         finish();

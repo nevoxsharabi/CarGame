@@ -9,19 +9,19 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class Leaderboard extends Application {
+public class ScoreBoard extends Application {
     private ArrayList<Record> recordsArray;
-    private static Leaderboard leaderboard;
+    private static ScoreBoard scoreBoard;
 
-    public Leaderboard() {
-        leaderboard = this;
+    public ScoreBoard() {
+        scoreBoard = this;
     }
 
-    public static Leaderboard getInstance() {
-        if (leaderboard == null) {
-            leaderboard = new Leaderboard();
+    public static ScoreBoard getInstance() {
+        if (scoreBoard == null) {
+            scoreBoard = new ScoreBoard();
         }
-        return leaderboard;
+        return scoreBoard;
     }
 
     public void addRecordToRecordsArray(Context context, Record record) {

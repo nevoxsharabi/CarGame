@@ -17,13 +17,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,7 +29,6 @@ import android.widget.Toast;
 
 import com.google.android.material.textview.MaterialTextView;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -58,30 +55,25 @@ public class GameActivity extends AppCompatActivity {
     private MediaPlayer coinSound;
     private LocationManager lm;
     private float oldX = 10;
-    private float oldY = 10;
     private float oldZ = 10;
     private float newX = 0;
-    private float newY = 0;
     private float newZ = 0;
 
 
     private LocationListener locationListener;
     private double longitude = 0;
     private double latitude = 0;
-    private int stopHandler = 0;
     private Record record;
     private Handler handler;
     private Runnable runnable;
 
-    private MaterialTextView game_LBL_title;
+
     private SensorManager sensorManager;
     private Sensor sensor;
     private SensorEventListener accSensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            DecimalFormat df = new DecimalFormat("##.##");
             newX = event.values[0] + 10;
-            newY = event.values[1] + 10;
             newZ = event.values[2] + 10;
             if (newX - oldX > 0.5) {
                 moveCarRightSensor();
@@ -91,12 +83,14 @@ public class GameActivity extends AppCompatActivity {
 
             if (newZ - oldZ > 1.5) {
                 fastDelayMode = true;
+                Game_MTV_Speed.setText("Speed Mode:fast");
             } else if (newZ - oldZ < -1.5) {
                 fastDelayMode = false;
+                Game_MTV_Speed.setText("Speed Mode:slow");
+
             }
 
             oldX = newX;
-            oldY = newY;
             oldZ = newZ;
         }
 
@@ -156,12 +150,11 @@ public class GameActivity extends AppCompatActivity {
             sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             linearLayoutArrows.setVisibility(View.INVISIBLE);
-            Log.i("info", "Sensor Enabled: " + sensorEnabled);
-        }else{
+        } else {
             Game_MTV_Speed.setVisibility(View.INVISIBLE);
+            linearLayoutArrows.setVisibility(View.VISIBLE);
         }
 
-        //initSensor();
 
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -169,13 +162,10 @@ public class GameActivity extends AppCompatActivity {
             public void run() {
                 dropItems();
                 Game_MTV_distance.setText(++distance + "M");
-                //++distance;
                 if (fastDelayMode) {
                     handler.postDelayed(this, fastDelay);
-                    Game_MTV_Speed.setText("Speed Mode:fast");
                 } else {
                     handler.postDelayed(this, slowDelay);
-                    Game_MTV_Speed.setText("Speed Mode:slow");
                 }
 
             }
@@ -191,6 +181,11 @@ public class GameActivity extends AppCompatActivity {
             car.setVisibility(View.INVISIBLE);
             car = findViewById(getResources().getIdentifier("imageViewCar" + (carTag - 1), "id", getPackageName()));
             car.setVisibility(View.VISIBLE);
+            if (checkCoin())
+                updateScore();
+            if (checkCrush())
+                crush();
+
         }
     }
 
@@ -201,6 +196,12 @@ public class GameActivity extends AppCompatActivity {
             car.setVisibility(View.INVISIBLE);
             car = findViewById(getResources().getIdentifier("imageViewCar" + (carTag + 1), "id", getPackageName()));
             car.setVisibility(View.VISIBLE);
+            if (checkCoin())
+                updateScore();
+
+            if (checkCrush())
+                crush();
+
         }
     }
 
@@ -223,9 +224,7 @@ public class GameActivity extends AppCompatActivity {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
-    public boolean isSensorExists(int sensorType) {
-        return (sensorManager.getDefaultSensor(sensorType) != null);
-    }
+
 
 
     @Override
@@ -240,30 +239,16 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-   /* @Override
-    protected void onResume() {
-        super.onResume();
-        if (sensorEnabled == 1)
-            sensorManager.registerListener(sensorEventListener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
+
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (sensorEnabled == 1)
-            sensorManager.unregisterListener(sensorEventListener);
-    }*/
-
-    //@Override
     public void onBackPressed() {
-        //super.onBackPressed();
         handler.removeCallbacks(runnable);
-        stopHandler = 1;
         Record record = new Record(distance, score, latitude, longitude);
-        Leaderboard.getInstance().addRecordToRecordsArray(getApplicationContext(), record);
-        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+        ScoreBoard.getInstance().addRecordToRecordsArray(getApplicationContext(), record);
+        Intent intent1 = new Intent(getApplicationContext(), MenuActivity.class);
         lm.removeUpdates(locationListener);
-        startActivity(intent);
+        startActivity(intent1);
         finish();
     }
 
@@ -277,7 +262,6 @@ public class GameActivity extends AppCompatActivity {
 
     private void toast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-
     }
 
     public void vibrate() {
@@ -293,7 +277,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void startNewGame() {
         Record record = new Record(distance, score, latitude, longitude);
-        Leaderboard.getInstance().addRecordToRecordsArray(getApplicationContext(), record);
+        ScoreBoard.getInstance().addRecordToRecordsArray(getApplicationContext(), record);
         for (int i = 39; i >= 0; i--) {
             rocks.get(i).setVisibility(View.INVISIBLE);
             coins.get(i).setVisibility(View.INVISIBLE);
@@ -331,11 +315,11 @@ public class GameActivity extends AppCompatActivity {
 
         if (checkCrush())
             crush();
-        randomNumber = random.nextInt(1000) % 13;
+        randomNumber = random.nextInt(1000) % 12;
         if (randomNumber < 5)
             rocks.get(randomNumber).setVisibility(View.VISIBLE);
 
-        randomNumber = random.nextInt(1000) % 19;
+        randomNumber = random.nextInt(1000) % 20;
         if (randomNumber < 5 && rocks.get(randomNumber).getVisibility() == View.INVISIBLE)
             coins.get(randomNumber).setVisibility(View.VISIBLE);
 
@@ -458,6 +442,11 @@ public class GameActivity extends AppCompatActivity {
 
         }
         car.setVisibility(View.VISIBLE);
+        if (checkCoin())
+            updateScore();
+
+        if (checkCrush())
+            crush();
     }
 }
 
