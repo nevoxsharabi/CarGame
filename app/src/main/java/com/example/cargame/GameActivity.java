@@ -1,10 +1,5 @@
 package com.example.cargame;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -27,9 +22,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.textview.MaterialTextView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -41,29 +40,24 @@ public class GameActivity extends AppCompatActivity {
     private Random random;
     private int score;
     private int sensorEnabled = 0;
-    private int slowDelay = 600;
-    private int fastDelay = 300;
+    private final int slowDelay = 600;
+    private final int fastDelay = 300;
     boolean fastDelayMode = false;
     private int distance;
-    private int randomNumber;
     private MaterialTextView Game_MTV_distance;
     private MaterialTextView Game_MTV_score;
     private MaterialTextView Game_MTV_Speed;
-    private LinearLayout linearLayoutArrows;
 
     private MediaPlayer crushSound;
     private MediaPlayer coinSound;
     private LocationManager lm;
     private float oldX = 10;
     private float oldZ = 10;
-    private float newX = 0;
-    private float newZ = 0;
 
 
     private LocationListener locationListener;
     private double longitude = 0;
     private double latitude = 0;
-    private Record record;
     private Handler handler;
     private Runnable runnable;
 
@@ -73,8 +67,8 @@ public class GameActivity extends AppCompatActivity {
     private SensorEventListener accSensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            newX = event.values[0] + 10;
-            newZ = event.values[2] + 10;
+            float newX = event.values[0] + 10;
+            float newZ = event.values[2] + 10;
             if (newX - oldX > 0.5) {
                 moveCarRightSensor();
             } else if (newX - oldX < -0.5) {
@@ -107,7 +101,7 @@ public class GameActivity extends AppCompatActivity {
         Game_MTV_distance = findViewById(R.id.Game_MTV_distance);
         Game_MTV_score = findViewById(R.id.Game_MTV_score);
         Game_MTV_Speed = findViewById(R.id.Game_MTV_speedMode);
-        linearLayoutArrows = findViewById(R.id.linearLayoutArrows);
+        LinearLayout linearLayoutArrows = findViewById(R.id.linearLayoutArrows);
         crushSound = MediaPlayer.create(GameActivity.this, R.raw.carsh);
         coinSound = MediaPlayer.create(GameActivity.this, R.raw.coin);
         random = new Random();
@@ -315,7 +309,7 @@ public class GameActivity extends AppCompatActivity {
 
         if (checkCrush())
             crush();
-        randomNumber = random.nextInt(1000) % 12;
+        int randomNumber = random.nextInt(1000) % 12;
         if (randomNumber < 5)
             rocks.get(randomNumber).setVisibility(View.VISIBLE);
 
@@ -329,36 +323,21 @@ public class GameActivity extends AppCompatActivity {
         int carTag = Integer.parseInt(car.getTag().toString());
         switch (carTag) {
             case 0:
-                if (coins.get(35).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return coins.get(35).getVisibility() == View.VISIBLE;
 
 
             case 1:
-                if (coins.get(36).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return coins.get(36).getVisibility() == View.VISIBLE;
+
 
             case 2:
-                if (coins.get(37).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return coins.get(37).getVisibility() == View.VISIBLE;
 
             case 3:
-                if (coins.get(38).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return coins.get(38).getVisibility() == View.VISIBLE;
 
             case 4:
-                if (coins.get(39).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
-
+                return coins.get(39).getVisibility() == View.VISIBLE;
         }
         return false;
 
@@ -389,35 +368,20 @@ public class GameActivity extends AppCompatActivity {
         int carTag = Integer.parseInt(car.getTag().toString());
         switch (carTag) {
             case 0:
-                if (rocks.get(35).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return rocks.get(35).getVisibility() == View.VISIBLE;
 
 
             case 1:
-                if (rocks.get(36).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return rocks.get(36).getVisibility() == View.VISIBLE;
 
             case 2:
-                if (rocks.get(37).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return rocks.get(37).getVisibility() == View.VISIBLE;
 
             case 3:
-                if (rocks.get(38).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return rocks.get(38).getVisibility() == View.VISIBLE;
 
             case 4:
-                if (rocks.get(39).getVisibility() == View.VISIBLE) {
-                    return true;
-                } else
-                    return false;
+                return rocks.get(39).getVisibility() == View.VISIBLE;
 
         }
         return false;
