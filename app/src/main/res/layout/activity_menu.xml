@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/backround1"
+    tools:context=".MenuActivity">
+
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/car_game"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/purple_200"
+        android:textSize="50sp" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/menu_BTN_game"
+        android:text="@string/start_game"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        app:iconSize="100dp"
+        android:textSize="28sp"
+        app:cornerRadius="50dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/menu_BTN_Records"
+        android:text="@string/records"
+        android:layout_marginTop="8dp"
+        android:textSize="28sp"
+        android:layout_centerHorizontal="true"
+        app:strokeColor="@color/purple_500"
+        app:cornerRadius="50dp"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/sensor_Switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/sensor_mode"
+        android:textSize="16sp"
+        android:textColor="@color/red700"
+        android:checked="false"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
