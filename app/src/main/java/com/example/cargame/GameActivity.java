@@ -53,6 +53,8 @@ public class GameActivity extends AppCompatActivity {
     private LocationManager lm;
     private float oldX = 10;
     private float oldZ = 10;
+    private float newX;
+    private float newZ ;
 
 
     private LocationListener locationListener;
@@ -69,9 +71,9 @@ public class GameActivity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent event) {
             float newX = event.values[0] + 10;
             float newZ = event.values[2] + 10;
-            if (newX - oldX > 0.5) {
+            if (newX - oldX > 0.7) {
                 moveCarRightSensor();
-            } else if (newX - oldX < -0.5) {
+            } else if (newX - oldX < -0.7) {
                 moveCarLeftSensor();
             }
 
