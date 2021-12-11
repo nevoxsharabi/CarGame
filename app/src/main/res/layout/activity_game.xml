@@ -468,6 +468,7 @@
 
     </LinearLayout>
 
+
     <LinearLayout
         android:id="@+id/linearLayoutCoins"
         android:layout_width="match_parent"
@@ -674,6 +675,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="visible">
+
             <ImageView
                 android:id="@+id/imageViewCoin20"
                 android:layout_width="80dp"
@@ -689,6 +691,7 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/coin" />
+
             <ImageView
                 android:id="@+id/imageViewCoin22"
                 android:layout_width="80dp"
@@ -713,7 +716,6 @@
                 android:layout_weight="1"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/coin" />
-
 
 
         </LinearLayout>
@@ -815,6 +817,7 @@
                 app:srcCompat="@drawable/coin" />
 
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/linearLayoutCoin7"
             android:layout_width="match_parent"
@@ -865,7 +868,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/linearLayoutCar"

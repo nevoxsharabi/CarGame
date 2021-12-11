@@ -32,6 +32,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);

@@ -77,10 +77,10 @@ public class GameActivity extends AppCompatActivity {
                 moveCarLeftSensor();
             }
 
-            if (newZ - oldZ > 1.5) {
+            if (newZ - oldZ > 1.1) {
                 fastDelayMode = true;
                 Game_MTV_Speed.setText("Speed Mode:fast");
-            } else if (newZ - oldZ < -1.5) {
+            } else if (newZ - oldZ < -1.1) {
                 fastDelayMode = false;
                 Game_MTV_Speed.setText("Speed Mode:slow");
 
@@ -311,11 +311,11 @@ public class GameActivity extends AppCompatActivity {
 
         if (checkCrush())
             crush();
-        int randomNumber = random.nextInt(1000) % 12;
+        int randomNumber = random.nextInt(1000) % 10;
         if (randomNumber < 5)
             rocks.get(randomNumber).setVisibility(View.VISIBLE);
 
-        randomNumber = random.nextInt(1000) % 20;
+        randomNumber = random.nextInt(1000) % 18;
         if (randomNumber < 5 && rocks.get(randomNumber).getVisibility() == View.INVISIBLE)
             coins.get(randomNumber).setVisibility(View.VISIBLE);
 
